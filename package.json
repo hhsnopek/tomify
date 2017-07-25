@@ -1,6 +1,6 @@
 {
   "name": "tomify",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "Tomify an image!",
   "main": "index.js",
   "author": "Henry Snopek <hhsnopek@gmail.com>",
