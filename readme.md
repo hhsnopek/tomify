@@ -2,7 +2,25 @@
 ![tomified](tomified.gif)
 
 ## Usage
-`$ tomify file1.jpg file2.jpg`
+```
+  Tomify an image!
+
+  Usage: $ tomify <image>
+
+  Options:
+    --output, -o Output Path, default: $PWD
+    --resize, -r Resize Tom, default: 1 (Number)
+    --debug, -d Debug Mode, default: false
+    --help, -h Display Help
+    --version Display Version
+
+  Examples:
+    $ tomify image.jpg
+        # process single image and save to $PWD/image.gif
+
+    $ tomify person1.jpg person2.jpg --output ./new-folder
+        # process multiple images, and saves to ./new-folder
+```
 
 ### If you are running macOS 10.12 (Sierra) use the following command to fix opencv:
 #### See: https://github.com/Homebrew/homebrew-science/issues/4303
