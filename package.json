@@ -1,0 +1,17 @@
+{
+  "name": "tomify",
+  "version": "1.0.0",
+  "description": "Tomify an image!",
+  "main": "index.js",
+  "author": "Henry Snopek <hhsnopek@gmail.com>",
+  "license": "MIT",
+  "bin": {
+    "tomify": "./index.js"
+  },
+  "dependencies": {
+    "faced": "^1.2.0",
+    "fs-extra": "^4.0.0",
+    "meow": "^3.7.0",
+    "projector-spawn": "^1.0.1"
+  }
+}
