@@ -22,9 +22,8 @@
         # process multiple images, and saves to ./new-folder
 ```
 
-### If you are running macOS 10.12 (Sierra) use the following command to fix opencv:
-#### See: https://github.com/Homebrew/homebrew-science/issues/4303
-$ brew install opencv --HEAD
+## Known Issues
+- Running macOS 10.12 (Sierra)? See: https://github.com/Homebrew/homebrew-science/issues/4303
 
 ## License
 MIT License
