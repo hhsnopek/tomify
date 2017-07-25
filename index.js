@@ -10,15 +10,21 @@ const faced = new Faced()
 
 const cli = meow(
   `
-  Usage: $ tomify <input>
+  Usage: $ tomify <image>
 
   Options:
-    --output, -o Output Path
-    --resize, -r Resize Number, 1.25
-    --debug, -d Debug
+    --output, -o Output Path, default: $PWD
+    --resize, -r Resize Tom, default: 1 (Number)
+    --debug, -d Debug Mode, default: false
+    --help, -h Display Help
+    --version Display Version
 
   Examples:
-    $ tomify file1.jpg file2.jpg -o ./new-folder
+    $ tomify image.jpg
+        # process single image and save to $PWD/image.gif
+
+    $ tomify person1.jpg person2.jpg --output ./new-folder
+        # process multiple images, and saves to ./new-folder
 `,
   {
     alias: { h: 'help', o: 'output', d: 'debug', r: 'resize' }
