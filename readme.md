@@ -5,6 +5,7 @@
 
 ## Requirements
 - [Imagemagick](//www.imagemagick.org)
+- [OpenCV](//opencv.org/downloads.html) v2.4.x 
 
 ## CLI Usage
 ```
