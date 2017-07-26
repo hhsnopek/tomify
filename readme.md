@@ -9,7 +9,7 @@
 
 ## CLI Usage
 ```
-  Replace faces in image(s) with Tom wiggle or your own Gif! 
+  Replace faces in image(s) with Tom wiggle or your own Gif!
 
   Usage: $ tomify <image>
 
@@ -17,6 +17,7 @@
     --output, -o Output Path, default: $PWD
     --resize, -r Resize Tom, default: 1 (Number)
     --debug, -d Debug Mode, default: false
+    --gif, -g Gif Path, default: tom-wiggle.gif
     --help, -h Display Help
     --version Display Version
 
