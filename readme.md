@@ -36,7 +36,7 @@
 const gif = 'path/to/custom.gif'
 const file = 'image/with/faces.jpg'
 const dest = 'path/to/output.gif'
-const reszie = 1
+const resize = 1
 
 replaceAll({ file, dest, resize, gif })
   .then(() => {
