@@ -1,7 +1,7 @@
 #!/usr/local/bin/node
 
 const fs = require('fs-extra')
-const { join, parse } = require('path')
+const { join, parse, resolve } = require('path')
 
 const meow = require('meow')
 const { replaceAll, debug } = require('./')
@@ -51,7 +51,8 @@ let dest = cli.flags.output || process.cwd()
 fs.ensureDirSync(dest)
 debug('Destination: %s', dest)
 
-const gif = cli.flags.gif || join(__dirname, 'tom-wiggle.gif')
+const gif = cli.flags.gif ? resolve(cli.flags.gif) : join(__dirname, 'tom-wiggle.gif')
+debug('Gif in use: %s', gif)
 
 /**
  * Build Toms
