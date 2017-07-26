@@ -1,98 +1,39 @@
-#!/usr/local/bin/node
-
-const fs = require('fs-extra')
-const meow = require('meow')
-const path = require('path')
+const { join, parse } = require('path')
+const { promisify } = require('util')
+const { exists } = require('fs-extra')
 const spawn = require('projector-spawn')
-const promisify = require('util').promisify
+const map = require('lodash.mapvalues')
 const Faced = require('faced')
+
+const existsAsync = promisify(exists)
 const faced = new Faced()
-
-const cli = meow(
-  `
-  Usage: $ tomify <image>
-
-  Options:
-    --output, -o Output Path, default: $PWD
-    --resize, -r Resize Tom, default: 1 (Number)
-    --debug, -d Debug Mode, default: false
-    --help, -h Display Help
-    --version Display Version
-
-  Examples:
-    $ tomify image.jpg
-        # process single image and save to $PWD/image.gif
-
-    $ tomify person1.jpg person2.jpg --output ./new-folder
-        # process multiple images, and saves to ./new-folder
-`,
-  {
-    alias: { h: 'help', o: 'output', d: 'debug', r: 'resize' }
-  }
-)
-
-/**
- * CLI
- */
-
-if (cli.input.length === 0 && !cli.flags.input) {
-  console.error('Specify at least one path')
-  process.exit(1)
-}
-if (!cli.flags.resize) cli.flags.resize = 1
-else if (typeof cli.flags.resize !== 'number') {
-  console.error('resize must be a number')
-  process.exit(1)
-}
-
-let dest = cli.flags.output || process.cwd()
-fs.ensureDirSync(dest)
-console.error('Destination: %s', dest)
-
-/**
- * Build Toms
- */
-
-const toms = []
-for (let file of cli.input) {
-  toms.push(
-    new Promise((resolve, reject) =>
-      findFace(file, dest).then(addTom).then(resolve).catch(reject)
-    )
-  )
-}
-
-Promise.all(toms)
-  .then(() => console.log('Done!'))
-  .catch(err => {
-    if (err.stderr) console.error(err.stderr)
-    else console.error(err)
-    process.exit(err.code || 1)
-  })
 
 /**
  * Find all Faces
  */
 
-function findFace(file, dest) {
-  return new Promise((resolve, reject) => {
-    debug('Processing %s...', file)
-    faced.detect(file, (faces, image, file) => {
-      if (faces.length === 0) {
-        reject(new Error(`Faces not found in ${file}`))
-        return
-      }
+async function replaceAll({ file, dest, resize }) {
+  debug('Processing %s...', file)
 
-      debug('Face face in %s...', file)
-      const face = faces[0]
+  return await detect(file).then(async ({ faces, image, file }) => {
+    debug('Found %s face(s) in %s...', faces.length, file)
+
+    const positions = []
+    map(faces, face => {
+      // x
       const centerX = (face.getX() + (face.getWidth() / 2))
-      const centerY = (face.getY() + (face.getHeight() / 2))
-      const tomWidth = cli.flags.resize * (face.getWidth() * 1.75)
-      const tomHeight = cli.flags.resize * (face.getHeight() * 1.75)
+      const tomWidth = resize * (face.getWidth() * 1.75)
       const x = centerX - (tomWidth / 2)
+      
+      // y
+      const centerY = (face.getY() + (face.getHeight() / 2))
+      const tomHeight = resize * (face.getHeight() * 1.75)
       const y = centerY - (tomHeight / 2)
-      resolve([dest, file, x, y, tomHeight, tomWidth])
+
+      positions.push({ x: parseInt(x), y: parseInt(y), height: parseInt(tomHeight), width: parseInt(tomWidth) })
     })
+
+    await addTom({ dest, file, positions })
   })
 }
 
@@ -100,40 +41,60 @@ function findFace(file, dest) {
  * Add Tom to Image
  */
 
-function addTom([dest, file, top, left, height, width]) {
-  let meta = path.parse(file)
-  dest = path.join(dest, `${meta.name}.gif`)
-  console.error('Tomifying %s...', meta.base)
-  return spawn(
-    'convert',
-    [
-      file,
-      'null:',
-      '\(',
-      path.join(__dirname, 'tom.gif'),
-      '-resize',
-      `${height}`,
-      '\)',
-      '-geometry',
-      `+${top}+${left}`,
-      '-layers',
-      'composite',
-      '-delete',
-      0,
-      '-loop',
-      0,
-      dest
-    ],
-    {
+async function addTom({ dest, file, positions }) {
+  return new Promise((resolve, reject) => {
+    debug('Tomifying %s...', file)
+    const queries = positions.reduce((queries, pos) => queries.concat(createQuery(pos)), [])
+    spawn('convert', [file, ...queries, dest], {
       cwd: process.cwd()
-    }
-  )
+    })
+      .then(resolve)
+      .catch(reject)
+  })
+}
+
+/**
+ * Async Detect
+ */
+
+function detect(file) {
+  return new Promise((resolve, reject) => {
+    faced.detect(file, (faces, images, file) => {
+      if (faces.length === 0) {
+        reject(new Error(`Faces not found in ${file}`))
+        return
+      }
+
+      resolve({ faces, images, file })
+    })
+  })
+}
+
+/**
+ * Create Imagemagick null query
+ */
+
+function createQuery({file, x, y, height, width}) {
+  return [
+    'null:',
+    '\(',
+    join(__dirname, 'tom.gif'),
+    '-resize',
+    `${height}x${width}`,
+    '\)',
+    '-geometry',
+    `+${x}+${y}`,
+    '-layers',
+    'composite'
+  ]
 }
 
 /**
  * Debug
  */
 
-function debug(msg) {
-  if (cli.flags.debug) console.error(msg)
+function debug(msg, ...args) {
+  if (process.env.TOMIFY_DEBUG === 'true') console.error(msg, ...args)
 }
+
+module.exports = { replaceAll, addTom, debug }

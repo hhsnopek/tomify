@@ -1,5 +1,5 @@
 # Tomify
-![tomified](tomified.gif)
+![tomified](examples/tomified.gif)
 
 ## Usage
 ```
