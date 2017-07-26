@@ -9,7 +9,7 @@
 
 ## CLI Usage
 ```
-  Tomify an image!
+  Replace faces in image(s) with Tom wiggle or your own Gif! 
 
   Usage: $ tomify <image>
 

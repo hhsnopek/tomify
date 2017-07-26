@@ -1,7 +1,7 @@
 {
   "name": "tomify",
   "version": "1.1.0",
-  "description": "Replace faces in an image with Tom wiggle or your own Gif!",
+  "description": "Replace faces in image(s) with Tom wiggle or your own Gif!",
   "main": "index.js",
   "author": "Henry Snopek <hhsnopek@gmail.com>",
   "license": "MIT",
