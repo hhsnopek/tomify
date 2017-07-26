@@ -4,7 +4,7 @@ const fs = require('fs-extra')
 const { join, parse } = require('path')
 
 const meow = require('meow')
-const { replaceAll, addTom, debug } = require('./')
+const { replaceAll, debug } = require('./')
 
 const cli = meow(
   `
@@ -14,6 +14,7 @@ const cli = meow(
     --output, -o Output Path, default: $PWD
     --resize, -r Resize Tom, default: 1 (Number)
     --debug, -d Debug Mode, default: false
+    --gif, -g Gif Path, default: tom-wiggle.gif
     --help, -h Display Help
     --version Display Version
 
@@ -25,7 +26,7 @@ const cli = meow(
         # process multiple images, and saves to ./new-folder
 `,
   {
-    alias: { h: 'help', o: 'output', d: 'debug', r: 'resize' }
+    alias: { h: 'help', o: 'output', d: 'debug', r: 'resize', g: 'gif' }
   }
 )
 
@@ -50,6 +51,8 @@ let dest = cli.flags.output || process.cwd()
 fs.ensureDirSync(dest)
 debug('Destination: %s', dest)
 
+const gif = cli.flags.gif || join(__dirname, 'tom-wiggle.gif')
+
 /**
  * Build Toms
  */
@@ -58,7 +61,7 @@ const toms = []
 cli.input.map(file => {
   toms.push(new Promise((resolve, reject) => {
     dest = join(dest, `${parse(file).name}.gif`)
-    return replaceAll({ file, dest, resize }).then(resolve).catch(reject)
+    return replaceAll({ file, dest, resize, gif }).then(resolve).catch(reject)
     })
   )
 })
