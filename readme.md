@@ -77,7 +77,7 @@ async function addGifs({ dest, file, positions })
 #### createQuery
 ```
 // Creates an imagemagick query, used internally in addGifs
-function createQuery({file, x, y, height, width, gif=defaultGif})
+function createQuery({ file, x, y, height, width, gif })
 
   // Params
   Object
